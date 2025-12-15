@@ -17,6 +17,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void profileSwitched();
+
 private:
     Ui::MainWindow *ui;
 };
