@@ -7,6 +7,8 @@ ProfileSelectDialog::ProfileSelectDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowTitle("Свадебное агенство");
+
     connect(ui->btnUser, &QPushButton::clicked,
             this, &ProfileSelectDialog::onBtnUserClicked);
     connect(ui->btnOrganizer, &QPushButton::clicked,
