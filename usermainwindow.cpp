@@ -3,8 +3,6 @@
 UserMainWindow::UserMainWindow(QWidget *parent)
     : MainWindow(parent)
 {
-    setWindowTitle("Свадебное агенство @ Ползователь");
-
     initUi();
     initConnections();
 }

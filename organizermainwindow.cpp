@@ -4,8 +4,6 @@
 OrganizerMainWindow::OrganizerMainWindow(QWidget *parent)
     : MainWindow(parent)
 {
-    setWindowTitle("Свадебное агенство @ Организатор");
-
     initUi();
     initConnections();
 }

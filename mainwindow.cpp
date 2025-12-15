@@ -5,6 +5,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    setWindowTitle("Свадебное агенство");
+
     initUi();
     connect(m_changeProfileButton, &QPushButton::clicked,
             this, &MainWindow::onChangeProfileButtonClicked);
