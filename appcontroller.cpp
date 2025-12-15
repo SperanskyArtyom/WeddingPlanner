@@ -1,4 +1,6 @@
 #include "appcontroller.h"
+#include "usermainwindow.h"
+#include "organizermainwindow.h"
 
 AppController::AppController(QObject *parent)
     : QObject{parent}
@@ -27,10 +29,10 @@ void AppController::createMainWindow(ProfileSelectDialog::ProfileType type)
 
     switch (type) {
     case ProfileSelectDialog::ProfileType::User:
-        m_mainWindow = new MainWindow;
+        m_mainWindow = new UserMainWindow;
         break;
     case ProfileSelectDialog::ProfileType::Organizer:
-        m_mainWindow = new MainWindow;
+        m_mainWindow = new OrganizerMainWindow;
         break;
     default:
         return;
