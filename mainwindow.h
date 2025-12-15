@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,10 +19,18 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     virtual ~MainWindow();
 
+protected:
+    QVBoxLayout *mainLayout;
+
 signals:
     void profileSwitched();
 
-protected:
-    Ui::MainWindow *ui;
+private slots:
+    void onChangeProfileButtonClicked();
+
+private:
+    void initUi();
+
+    QPushButton *m_changeProfileButton;
 };
 #endif // MAINWINDOW_H
