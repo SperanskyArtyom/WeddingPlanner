@@ -39,9 +39,10 @@ public:
     QSqlDatabase& database();
     bool isOpen() const;
 
-QList<WeddingOrder> getOrders(OrderFilter filter,
+    QList<WeddingOrder> getOrders(OrderFilter filter,
                               OrderSort sort,
                               const QString &filterText);
+    WeddingOrder getOrder(int id);
 
 private:
     QSqlDatabase m_db;

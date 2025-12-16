@@ -151,3 +151,51 @@ QList<WeddingOrder> DatabaseManager::getOrders(OrderFilter filter,
 
     return result;
 }
+
+WeddingOrder DatabaseManager::getOrder(int id)
+{
+    WeddingOrder order;
+
+    if (!isOpen())
+        return order;
+
+    QSqlQuery query(m_db);
+
+    query.prepare("SELECT date, budget, comment FROM orders WHERE id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec() || !query.next()) {
+        qDebug() << "Order not found or query failed:" << query.lastError().text();
+        return order;
+    }
+
+    QDate date = QDate::fromString(query.value("date").toString(), Qt::ISODate);
+    double budget = query.value("budget").toDouble();
+    QString comment = query.value("comment").toString();
+
+    QSqlQuery clientQuery(m_db);
+    clientQuery.prepare("SELECT name FROM clients WHERE order_id = :id");
+    clientQuery.bindValue(":id", id);
+    QString clientName;
+    if (clientQuery.exec() && clientQuery.next())
+        clientName = clientQuery.value("name").toString();
+
+    order = WeddingOrder(id, clientName, date, budget, comment);
+
+    QSqlQuery serviceQuery(m_db);
+    serviceQuery.prepare("SELECT type, performer_name FROM services WHERE order_id = :id");
+    serviceQuery.bindValue(":id", id);
+
+    if (serviceQuery.exec()) {
+        while (serviceQuery.next()) {
+            int typeInt = serviceQuery.value("type").toInt();
+            QString performer = serviceQuery.value("performer_name").toString();
+            Service::Type type = static_cast<Service::Type>(typeInt);
+            order.setServicePerformer(type, performer);
+        }
+    } else {
+        qDebug() << "Service query failed:" << serviceQuery.lastError().text();
+    }
+
+    return order;
+}
