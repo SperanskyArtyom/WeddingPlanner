@@ -3,10 +3,10 @@
 #include <algorithm>
 
 WeddingOrder::WeddingOrder(int id,
-                           const std::string &clientName,
+                           const QString &clientName,
                            const QDate &date,
                            double budget,
-                           const std::string &comment)
+                           const QString &comment)
     : m_id(id)
     , m_clientName(clientName)
     , m_date(date)
@@ -20,7 +20,7 @@ int WeddingOrder::id() const
     return m_id;
 }
 
-const std::string &WeddingOrder::clientName() const
+const QString &WeddingOrder::clientName() const
 {
     return m_clientName;
 }
@@ -35,7 +35,7 @@ double WeddingOrder::budget() const
     return m_budget;
 }
 
-const std::string &WeddingOrder::comment() const
+const QString &WeddingOrder::comment() const
 {
     return m_comment;
 }
@@ -45,7 +45,7 @@ const std::vector<Service> &WeddingOrder::services() const
     return m_services;
 }
 
-void WeddingOrder::setClientName(const std::string &name)
+void WeddingOrder::setClientName(const QString &name)
 {
     m_clientName = name;
 }
@@ -60,7 +60,7 @@ void WeddingOrder::setBudget(double budget)
     m_budget = budget;
 }
 
-void WeddingOrder::setComment(const std::string &comment)
+void WeddingOrder::setComment(const QString &comment)
 {
     m_comment = comment;
 }

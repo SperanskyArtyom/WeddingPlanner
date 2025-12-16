@@ -4,7 +4,7 @@
 #include "service.h"
 
 #include <QDate>
-#include <string>
+#include <QString>
 #include <vector>
 
 class WeddingOrder
@@ -13,22 +13,22 @@ public:
     WeddingOrder() = default;
 
     WeddingOrder(int id,
-                 const std::string &clientName,
+                 const QString &clientName,
                  const QDate &date,
                  double budget,
-                 const std::string &comment = "");
+                 const QString &comment = QString());
 
     int id() const;
-    const std::string &clientName() const;
+    const QString &clientName() const;
     const QDate &date() const;
     double budget() const;
-    const std::string &comment() const;
+    const QString &comment() const;
     const std::vector<Service> &services() const;
 
-    void setClientName(const std::string &name);
+    void setClientName(const QString &name);
     void setDate(const QDate &date);
     void setBudget(double budget);
-    void setComment(const std::string &comment);
+    void setComment(const QString &comment);
 
     void addService(const Service &service);
     void removeServiceById(int serviceId);
@@ -36,10 +36,10 @@ public:
 
 private:
     int m_id = -1;
-    std::string m_clientName;
+    QString m_clientName;
     QDate m_date;
     double m_budget = 0.0;
-    std::string m_comment;
+    QString m_comment;
     std::vector<Service> m_services;
 };
 

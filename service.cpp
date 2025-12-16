@@ -2,7 +2,7 @@
 
 Service::Service(int id,
                  Type type,
-                 std::string &performerName)
+                 const QString &performerName)
     : m_id(id)
     , m_type(type)
     , m_performerName(performerName)
@@ -19,7 +19,7 @@ Service::Type Service::type() const
     return m_type;
 }
 
-const std::string &Service::performerName() const
+const QString &Service::performerName() const
 {
     return m_performerName;
 }
@@ -29,7 +29,7 @@ void Service::setType(Type type)
     m_type = type;
 }
 
-void Service::setPerformerName(const std::string &name)
+void Service::setPerformerName(const QString &name)
 {
     m_performerName = name;
 }

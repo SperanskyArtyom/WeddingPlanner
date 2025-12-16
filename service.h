@@ -1,14 +1,13 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 
-#include <string>
+#include <QString>
 
 class Service
 {
 public:
     enum class Type
     {
-        None,
         Photo,
         Host,
         Decor,
@@ -19,19 +18,19 @@ public:
 
     Service(int id,
             Type type,
-            std::string &performerName);
+            const QString &performerName);
 
     int id() const;
     Type type() const;
-    const std::string &performerName() const;
+    const QString &performerName() const;
 
     void setType(Type type);
-    void setPerformerName(const std::string &name);
+    void setPerformerName(const QString &name);
 
 private:
     int m_id = -1;
-    Type m_type = Type::None;
-    std::string m_performerName;
+    Type m_type;
+    QString m_performerName;
 };
 
 #endif // SERVICE_H
