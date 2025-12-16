@@ -1,5 +1,6 @@
 #include "organizermainwindow.h"
 #include "ordersearchwidget.h"
+#include "organizerordercard.h"
 
 OrganizerMainWindow::OrganizerMainWindow(QWidget *parent)
     : MainWindow(parent)
@@ -29,9 +30,19 @@ void OrganizerMainWindow::initConnections()
             this, &OrganizerMainWindow::onOrderSelected);
 }
 
-void OrganizerMainWindow::onOrderSelected()
+void OrganizerMainWindow::onOrderSelected(const WeddingOrder &order)
 {
-    qDebug() << "item selected";
+    if (order.id() == -1)
+        return; // нечего открывать
+
+    // Создаём окно детального просмотра
+    OrganizerOrderCard *orderCard = new OrganizerOrderCard(m_dbManager);
+    orderCard->setAttribute(Qt::WA_DeleteOnClose); // автоматически удаляется при закрытии
+    orderCard->setOrder(order);
+
+    orderCard->setWindowTitle("Заказ: " + order.clientName());
+    orderCard->resize(600, 300); // примерный размер окна
+    orderCard->show();
 }
 
 void OrganizerMainWindow::updateOrderList()

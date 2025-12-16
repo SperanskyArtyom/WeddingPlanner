@@ -199,3 +199,48 @@ WeddingOrder DatabaseManager::getOrder(int id)
 
     return order;
 }
+
+bool DatabaseManager::addOrder(const WeddingOrder &order)
+{
+    if (!isOpen()) return false;
+
+    QSqlQuery query(m_db);
+
+    query.prepare("INSERT INTO orders (date, budget, comment) "
+                  "VALUES (:date, :budget, :comment)");
+    query.bindValue(":date", order.date().toString("dd.MM.yy"));
+    query.bindValue(":budget", order.budget());
+    query.bindValue(":comment", order.comment());
+
+    if (!query.exec()) {
+        qDebug() << "Failed to insert order:" << query.lastError().text();
+        return false;
+    }
+
+    int orderId = static_cast<int>(query.lastInsertId().toInt());
+
+    query.prepare("INSERT INTO clients (order_id, name) VALUES (:order_id, :name)");
+    query.bindValue(":order_id", orderId);
+    query.bindValue(":name", order.clientName());
+    if (!query.exec()) {
+        qDebug() << "Failed to insert client:" << query.lastError().text();
+        return false;
+    }
+
+    query.prepare("INSERT INTO services (order_id, type, performer_name) "
+                  "VALUES (:order_id, :type, :performer_name)");
+
+    for (int i = 0; i < 4; ++i) {
+        Service::Type type = static_cast<Service::Type>(i);
+        query.bindValue(":order_id", orderId);
+        query.bindValue(":type", i); // type как int
+        query.bindValue(":performer_name", order.servicePerformer(type));
+
+        if (!query.exec()) {
+            qDebug() << "Failed to insert service:" << query.lastError().text();
+            return false;
+        }
+    }
+
+    return true;
+}

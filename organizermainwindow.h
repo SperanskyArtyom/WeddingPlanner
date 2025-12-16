@@ -15,7 +15,7 @@ public:
 
 private slots:
     void updateOrderList();
-    void onOrderSelected();
+    void onOrderSelected(const WeddingOrder &order);
 
 
 private:
