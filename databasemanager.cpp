@@ -141,7 +141,7 @@ QList<WeddingOrder> DatabaseManager::getOrders(OrderFilter filter,
         WeddingOrder order(
             query.value(0).toInt(),
             query.value(1).toString(),
-            QDate::fromString(query.value(2).toString(), Qt::ISODate),
+            QDate::fromString(query.value(2).toString(), "dd.MM.yy"),
             query.value(3).toDouble(),
             query.value(4).toString()
             );
@@ -169,7 +169,7 @@ WeddingOrder DatabaseManager::getOrder(int id)
         return order;
     }
 
-    QDate date = QDate::fromString(query.value("date").toString(), Qt::ISODate);
+    QDate date = QDate::fromString(query.value("date").toString(), "dd.MM.yy");
     double budget = query.value("budget").toDouble();
     QString comment = query.value("comment").toString();
 

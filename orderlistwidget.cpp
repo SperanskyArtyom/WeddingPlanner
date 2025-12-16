@@ -24,7 +24,7 @@ void OrderListWidget::setOrders(const QList<WeddingOrder> &orders)
     {
         QString text = QString("%1\nДата: %2\nБюджет: %3 рублей")
                            .arg(order.clientName())
-                           .arg(order.date().toString(Qt::ISODate))
+                           .arg(order.date().toString("dd.MM.yy"))
                            .arg(order.budget());
         QListWidgetItem *item = new QListWidgetItem(text, m_listWidget);
         item->setData(Qt::UserRole, order.id());

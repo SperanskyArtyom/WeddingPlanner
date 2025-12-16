@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 
 #include <QLabel>
+#include "clientordercard.h"
 
 class UserMainWindow : public MainWindow
 {
@@ -18,7 +19,7 @@ private:
     void initUi();
     void initConnections();
 
-    QLabel *m_orderLabel;
+    ClientOrderCard *m_orderCard;
     QPushButton *m_payButton;
 };
 

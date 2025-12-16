@@ -5,14 +5,17 @@ UserMainWindow::UserMainWindow(QWidget *parent)
 {
     initUi();
     initConnections();
+
+    WeddingOrder order = m_dbManager->getOrder(1);
+    m_orderCard->setOrder(order);
 }
 
 void UserMainWindow::initUi()
 {
-    m_orderLabel = new QLabel("Информация о заказе", this);
+    m_orderCard = new ClientOrderCard(this);
     m_payButton = new QPushButton("Оплатить", this);
 
-    mainLayout->addWidget(m_orderLabel);
+    mainLayout->addWidget(m_orderCard);
     mainLayout->addStretch();
     mainLayout->addWidget(m_payButton);
 }
