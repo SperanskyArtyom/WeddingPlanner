@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include "databasemanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,6 +22,7 @@ public:
 
 protected:
     QVBoxLayout *mainLayout;
+    DatabaseManager *m_dbManager;
 
 signals:
     void profileSwitched();

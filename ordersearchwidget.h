@@ -17,7 +17,7 @@ public:
     enum class FilterType {
         Client,
         Date,
-        PaymentStatus
+        Budget
     };
 
     enum class SortType {

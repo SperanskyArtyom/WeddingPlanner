@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 
 #include <QHBoxLayout>
+#include <QMessageBox>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -8,6 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Свадебное агенство");
 
     initUi();
+
+    m_dbManager = new DatabaseManager(this);
+    m_dbManager->openDatabase("wedding_planner.db");
+
     connect(m_changeProfileButton, &QPushButton::clicked,
             this, &MainWindow::onChangeProfileButtonClicked);
 }

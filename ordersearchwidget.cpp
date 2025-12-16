@@ -35,7 +35,7 @@ void OrderSearchWidget::initFilterMenu()
 
     filterClient->setData(static_cast<int>(FilterType::Client));
     filterDate->setData(static_cast<int>(FilterType::Date));
-    filterPayment->setData(static_cast<int>(FilterType::PaymentStatus));
+    filterPayment->setData(static_cast<int>(FilterType::Budget));
 
     QList<QAction*> filterActions = {
         filterClient,
