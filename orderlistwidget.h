@@ -19,7 +19,7 @@ signals:
     void orderSelected(const WeddingOrder &order);
 
 private slots:
-    void onItemClicked(QListWidgetItem *item);
+    void onItemDoubleClicked(QListWidgetItem *item);
 
 private:
     QListWidget *m_listWidget;

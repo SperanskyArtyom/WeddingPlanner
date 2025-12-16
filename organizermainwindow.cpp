@@ -31,6 +31,7 @@ void OrganizerMainWindow::initConnections()
 
 void OrganizerMainWindow::onOrderSelected()
 {
+    qDebug() << "item selected";
 }
 
 void OrganizerMainWindow::updateOrderList()

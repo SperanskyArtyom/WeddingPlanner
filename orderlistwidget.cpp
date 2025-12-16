@@ -9,11 +9,10 @@ OrderListWidget::OrderListWidget(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(m_listWidget);
-    layout->setContentsMargins(0,0,0,0);
     setLayout(layout);
 
-    connect(m_listWidget, &QListWidget::itemClicked,
-            this, &OrderListWidget::onItemClicked);
+    connect(m_listWidget, &QListWidget::itemDoubleClicked,
+            this, &OrderListWidget::onItemDoubleClicked);
 }
 
 void OrderListWidget::setOrders(const QList<WeddingOrder> &orders)
@@ -48,7 +47,7 @@ WeddingOrder OrderListWidget::selectedOrder() const
     return WeddingOrder();
 }
 
-void OrderListWidget::onItemClicked(QListWidgetItem *item)
+void OrderListWidget::onItemDoubleClicked(QListWidgetItem *item)
 {
     Q_UNUSED(item)
     emit orderSelected(selectedOrder());
