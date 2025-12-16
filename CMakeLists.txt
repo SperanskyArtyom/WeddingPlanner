@@ -27,6 +27,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
     qt_add_executable(WeddingPlanner
         MANUAL_FINALIZATION
@@ -42,6 +43,10 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
         orderlistwidget.h orderlistwidget.cpp
         clientordercard.h clientordercard.cpp
         organizerordercard.h organizerordercard.cpp
+        orderconstructor.h orderconstructor.cpp
+        paymentdialog.h paymentdialog.cpp
+        tasklist.h
+        tasklistwidget.h tasklistwidget.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET WeddingPlanner APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -68,6 +73,7 @@ target_link_libraries(WeddingPlanner PRIVATE Qt6::Widgets)
 target_link_libraries(WeddingPlanner PRIVATE Qt6::Widgets)
 target_link_libraries(WeddingPlanner PRIVATE Qt6::Core)
 target_link_libraries(WeddingPlanner PRIVATE Qt6::Sql)
+target_link_libraries(WeddingPlanner PRIVATE Qt6::Widgets)
 target_link_libraries(WeddingPlanner PRIVATE Qt6::Widgets)
 target_link_libraries(WeddingPlanner PRIVATE Qt6::Widgets)
 target_link_libraries(WeddingPlanner PRIVATE Qt6::Widgets)

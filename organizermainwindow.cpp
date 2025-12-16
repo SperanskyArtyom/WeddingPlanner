@@ -1,6 +1,7 @@
 #include "organizermainwindow.h"
 #include "ordersearchwidget.h"
 #include "organizerordercard.h"
+#include "orderconstructor.h"
 
 OrganizerMainWindow::OrganizerMainWindow(QWidget *parent)
     : MainWindow(parent)
@@ -28,17 +29,20 @@ void OrganizerMainWindow::initConnections()
             this, &OrganizerMainWindow::updateOrderList);
     connect(m_orderListWidget, &OrderListWidget::orderSelected,
             this, &OrganizerMainWindow::onOrderSelected);
+    connect(m_addOrderButton, &QPushButton::clicked,
+            this, &OrganizerMainWindow::onAddOrderButtonClicked);
 }
 
 void OrganizerMainWindow::onOrderSelected(const WeddingOrder &order)
 {
     if (order.id() == -1)
-        return; // нечего открывать
+        return;
 
-    // Создаём окно детального просмотра
+    WeddingOrder selectedOrder = m_dbManager->getOrder(order.id());
+
     OrganizerOrderCard *orderCard = new OrganizerOrderCard(m_dbManager);
-    orderCard->setAttribute(Qt::WA_DeleteOnClose); // автоматически удаляется при закрытии
-    orderCard->setOrder(order);
+    orderCard->setAttribute(Qt::WA_DeleteOnClose);
+    orderCard->setOrder(selectedOrder);
 
     orderCard->setWindowTitle("Заказ: " + order.clientName());
     orderCard->resize(600, 300); // примерный размер окна
@@ -56,4 +60,16 @@ void OrganizerMainWindow::updateOrderList()
 
     QList<WeddingOrder> orders = m_dbManager->getOrders(filter, sort, text);
     m_orderListWidget->setOrders(orders);
+}
+
+void OrganizerMainWindow::onAddOrderButtonClicked()
+{
+    auto dialog = new OrderConstructor(m_dbManager, this);
+
+    connect(dialog, &OrderConstructor::orderAdded,
+            this, [this](const WeddingOrder &){
+        updateOrderList();
+    });
+
+    dialog->exec();
 }

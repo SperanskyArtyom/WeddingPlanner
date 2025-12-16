@@ -7,6 +7,7 @@
 #include <QList>
 #include "weddingorder.h"
 #include "service.h"
+#include "tasklist.h"
 
 class DatabaseManager : public QObject
 {
@@ -43,6 +44,14 @@ public:
                               OrderSort sort,
                               const QString &filterText);
     WeddingOrder getOrder(int id);
+    QList<QString> getAvailablePerformers(Service::Type type, const QDate &date);
+    double getPaidAmount(int orderId) const;
+    QList<Task> getTasksForOrder(int orderId);
+
+    int addOrder(const WeddingOrder &order);
+    bool saveService(int orderId, const Service &service);
+    bool addPayment(int orderId, double amount);
+    bool saveTask(int orderId, Task &task);
 
 private:
     QSqlDatabase m_db;

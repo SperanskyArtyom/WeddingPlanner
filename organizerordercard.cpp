@@ -1,5 +1,7 @@
 #include "organizerordercard.h"
+
 #include <QDebug>
+#include "paymentdialog.h"
 
 OrganizerOrderCard::OrganizerOrderCard(DatabaseManager *dbManager, QWidget *parent)
     : QWidget(parent), m_dbManager(dbManager)
@@ -34,11 +36,11 @@ void OrganizerOrderCard::initUi()
 
     leftWidget->setLayout(leftLayout);
 
-    m_checklistWidget = new QWidget(this); // позже наполним
-    m_checklistWidget->setMinimumWidth(300); // пример, чтобы визуально было видно
+    m_taskListWidget = new TaskListWidget(m_dbManager, -1, this);
+    m_taskListWidget->setMaximumWidth(300);
 
     mainLayout->addWidget(leftWidget);
-    mainLayout->addWidget(m_checklistWidget);
+    mainLayout->addWidget(m_taskListWidget);
     mainLayout->setStretch(0, 1);
     mainLayout->setStretch(1, 1);
 
@@ -51,9 +53,8 @@ void OrganizerOrderCard::setOrder(const WeddingOrder &order)
 
     m_clientNameLabel->setText("Имя клиента: " + order.clientName());
     m_dateLabel->setText("Дата: " + order.date().toString("dd.MM.yy"));
-    m_budgetLabel->setText("Бюджет: " + QString::number(order.budget()) + " рублей");
+    m_budgetLabel->setText("Бюджет: " + QString::number(order.budget(), 'f', 0) + " рублей");
 
-    // Очистка старых виджетов услуг
     QLayoutItem *child;
     while ((child = m_servicesLayout->takeAt(0)) != nullptr) {
         if (child->widget()) child->widget()->deleteLater();
@@ -66,6 +67,13 @@ void OrganizerOrderCard::setOrder(const WeddingOrder &order)
         QString performer = order.servicePerformer(type);
         initServiceRow(type, performer);
     }
+
+    if (m_taskListWidget)
+        m_taskListWidget->deleteLater();
+
+    m_taskListWidget = new TaskListWidget(m_dbManager, order.id(), this);
+    m_taskListWidget->setMinimumWidth(300);
+    layout()->addWidget(m_taskListWidget);
 }
 
 void OrganizerOrderCard::initServiceRow(Service::Type type, const QString &performerName)
@@ -83,9 +91,7 @@ void OrganizerOrderCard::initServiceRow(Service::Type type, const QString &perfo
 
     QComboBox *combo = new QComboBox(this);
     combo->addItem(performerName.isEmpty() ? "не назначено" : performerName);
-    // Здесь позже можно добавить список доступных исполнителей
-    // Пример:
-    // combo->addItems(m_dbManager->getAvailablePerformers(type, m_order.date()));
+    combo->addItems(m_dbManager->getAvailablePerformers(type, m_order.date()));
 
     connect(combo, &QComboBox::currentTextChanged, [this, type](const QString &text){
         onPerformerChanged(type, text);
@@ -100,13 +106,26 @@ void OrganizerOrderCard::initServiceRow(Service::Type type, const QString &perfo
 
 void OrganizerOrderCard::onPerformerChanged(Service::Type type, const QString &performerName)
 {
-    m_order.setServicePerformer(type, performerName);
-    // Здесь можно сразу сохранять изменение в БД через m_dbManager
+    Service service = m_order.service(type);
+
+    if (performerName == "не назначено")
+        service.setPerformerName("");
+    else
+        service.setPerformerName(performerName);
+
+    if (!m_dbManager->saveService(m_order.id(), service))
+    {
+        qDebug() << "Ощибка сохранения услуги";
+        return;
+    }
     qDebug() << "Изменён исполнитель услуги" << static_cast<int>(type) << ":" << performerName;
 }
 
 void OrganizerOrderCard::onPaymentClicked()
 {
-    // Реализация внесения оплаты позже
-    qDebug() << "Нажата кнопка оплаты для заказа" << m_order.id();
+    if (!m_dbManager || m_order.id() == -1)
+        return;
+
+    PaymentDialog dialog(m_dbManager, m_order, this);
+    dialog.exec();
 }

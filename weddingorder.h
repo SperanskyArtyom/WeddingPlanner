@@ -23,6 +23,7 @@ public:
     double budget() const;
     const QString &comment() const;
     const QString &servicePerformer(Service::Type type) const;
+    Service service(Service::Type type) const;
 
     void setClientName(const QString &name);
     void setDate(const QDate &date);

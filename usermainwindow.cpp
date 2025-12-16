@@ -1,13 +1,15 @@
 #include "usermainwindow.h"
 
+#include "paymentdialog.h"
+
 UserMainWindow::UserMainWindow(QWidget *parent)
     : MainWindow(parent)
 {
     initUi();
     initConnections();
 
-    WeddingOrder order = m_dbManager->getOrder(1);
-    m_orderCard->setOrder(order);
+    m_order = m_dbManager->getOrder(1);
+    m_orderCard->setOrder(m_order);
 }
 
 void UserMainWindow::initUi()
@@ -28,5 +30,9 @@ void UserMainWindow::initConnections()
 
 void UserMainWindow::onPayButtonClicked()
 {
-    qDebug() << "Открываем виджет оплаты";
+    if (!m_dbManager || m_order.id() == -1)
+        return;
+
+    PaymentDialog dialog(m_dbManager, m_order, this);
+    dialog.exec();
 }

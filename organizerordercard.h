@@ -9,6 +9,8 @@
 #include <QComboBox>
 #include "weddingorder.h"
 #include "databasemanager.h"
+#include "tasklist.h"
+#include "tasklistwidget.h"
 
 class OrganizerOrderCard : public QWidget
 {
@@ -35,7 +37,7 @@ private:
     QVBoxLayout *m_servicesLayout;
     QMap<Service::Type, QComboBox*> m_serviceCombos;
     QPushButton *m_paymentButton;
-    QWidget *m_checklistWidget;
+    TaskListWidget * m_taskListWidget;
 };
 
 #endif // ORGANIZERORDERCARD_H

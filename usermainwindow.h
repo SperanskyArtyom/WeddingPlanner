@@ -20,6 +20,7 @@ private:
     void initConnections();
 
     ClientOrderCard *m_orderCard;
+    WeddingOrder m_order;
     QPushButton *m_payButton;
 };
 

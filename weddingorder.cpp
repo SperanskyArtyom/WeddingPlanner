@@ -51,6 +51,12 @@ const QString &WeddingOrder::servicePerformer(Service::Type type) const
     return m_services[index].performerName();
 }
 
+Service WeddingOrder::service(Service::Type type) const
+{
+    int index = static_cast<int>(type);
+    return m_services[index];
+}
+
 void WeddingOrder::setClientName(const QString &name)
 {
     m_clientName = name;

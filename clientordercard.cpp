@@ -27,7 +27,7 @@ ClientOrderCard::ClientOrderCard(QWidget *parent)
 void ClientOrderCard::setOrder(const WeddingOrder &order)
 {
     m_dateLabel->setText("Дата: " + order.date().toString("dd.MM.yy"));
-    m_budgetLabel->setText("Бюджет: " + QString::number(order.budget()) + " рублей");
+    m_budgetLabel->setText("Бюджет: " + QString::number(order.budget(), 'f', 0) + " рублей");
 
     auto getPerformerText = [](const QString &name) {
         return name.isEmpty() ? "не назначено" : name;

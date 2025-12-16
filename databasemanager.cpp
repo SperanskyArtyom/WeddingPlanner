@@ -200,9 +200,50 @@ WeddingOrder DatabaseManager::getOrder(int id)
     return order;
 }
 
-bool DatabaseManager::addOrder(const WeddingOrder &order)
+QList<QString> DatabaseManager::getAvailablePerformers(Service::Type type, const QDate &date)
 {
-    if (!isOpen()) return false;
+    QList<QString> result;
+
+    if (!isOpen())
+        return result;
+
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        SELECT p.name
+        FROM performers p
+        WHERE p.type = :type
+          AND p.name NOT IN (
+              SELECT s.performer_name
+              FROM services s
+              JOIN orders o ON o.id = s.order_id
+              WHERE s.type = :type
+                AND o.date = :date
+          )
+        ORDER BY p.name
+    )");
+
+    query.bindValue(":type", static_cast<int>(type));
+    query.bindValue(":date", date.toString("dd.MM.yy"));
+
+    if (!query.exec())
+    {
+        qDebug() << "availablePerformers error:"
+                 << query.lastError().text();
+        return result;
+    }
+
+    while (query.next())
+    {
+        result.append(query.value(0).toString());
+    }
+
+    return result;
+}
+
+int DatabaseManager::addOrder(const WeddingOrder &order)
+{
+    if (!isOpen()) return -1;
 
     QSqlQuery query(m_db);
 
@@ -214,7 +255,7 @@ bool DatabaseManager::addOrder(const WeddingOrder &order)
 
     if (!query.exec()) {
         qDebug() << "Failed to insert order:" << query.lastError().text();
-        return false;
+        return -1;
     }
 
     int orderId = static_cast<int>(query.lastInsertId().toInt());
@@ -224,20 +265,154 @@ bool DatabaseManager::addOrder(const WeddingOrder &order)
     query.bindValue(":name", order.clientName());
     if (!query.exec()) {
         qDebug() << "Failed to insert client:" << query.lastError().text();
+        return -1;
+    }
+
+    return orderId;
+}
+
+bool DatabaseManager::saveService(int orderId, const Service &service)
+{
+    if (!isOpen())
+        return false;
+
+    QSqlQuery query(m_db);
+
+    if (service.id() == -1)
+    {
+        // INSERT
+        query.prepare(R"(
+            INSERT INTO services (order_id, type, performer_name)
+            VALUES (:order_id, :type, :performer_name)
+        )");
+
+        query.bindValue(":order_id", orderId);
+        query.bindValue(":type", static_cast<int>(service.type()));
+        query.bindValue(":performer_name", service.performerName());
+
+        if (!query.exec())
+        {
+            qDebug() << "Insert service error:" << query.lastError().text();
+            return false;
+        }
+
+        // при необходимости можно получить новый id:
+        // int newId = query.lastInsertId().toInt();
+        // service.setId(newId);  ← только если service НЕ const
+    }
+    else
+    {
+        // UPDATE
+        query.prepare(R"(
+            UPDATE services
+            SET performer_name = :performer_name
+            WHERE id = :id
+        )");
+
+        query.bindValue(":performer_name", service.performerName());
+        query.bindValue(":id", service.id());
+
+        if (!query.exec())
+        {
+            qDebug() << "Update service error:" << query.lastError().text();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+double DatabaseManager::getPaidAmount(int orderId) const
+{
+    if (!isOpen()) return 0.0;
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT SUM(amount) FROM payments WHERE order_id = :id");
+    query.bindValue(":id", orderId);
+
+    if (!query.exec()) {
+        qDebug() << "getPaidAmount error:" << query.lastError().text();
+        return 0.0;
+    }
+
+    if (query.next()) {
+        return query.value(0).toDouble();
+    }
+    return 0.0;
+}
+
+bool DatabaseManager::addPayment(int orderId, double amount)
+{
+    if (!isOpen()) return false;
+
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO payments (order_id, amount, created_at) "
+                  "VALUES (:order_id, :amount, :created_at)");
+    query.bindValue(":order_id", orderId);
+    query.bindValue(":amount", amount);
+    query.bindValue(":created_at", QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss"));
+
+    if (!query.exec()) {
+        qDebug() << "addPayment error:" << query.lastError().text();
         return false;
     }
 
-    query.prepare("INSERT INTO services (order_id, type, performer_name) "
-                  "VALUES (:order_id, :type, :performer_name)");
+    return true;
+}
 
-    for (int i = 0; i < 4; ++i) {
-        Service::Type type = static_cast<Service::Type>(i);
+QList<Task> DatabaseManager::getTasksForOrder(int orderId)
+{
+    QList<Task> tasks;
+    if(!isOpen()) return tasks;
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT id, section, title, is_done FROM tasks WHERE order_id = :orderId");
+    query.bindValue(":orderId", orderId);
+
+    if(!query.exec()) {
+        qDebug() << "getTasksForOrder error:" << query.lastError().text();
+        return tasks;
+    }
+
+    while(query.next()) {
+        Task t;
+        t.id = query.value("id").toInt();
+        t.section = query.value("section").toString();
+        t.label = query.value("title").toString();
+        t.isDone = query.value("is_done").toInt() != 0;
+        tasks.append(t);
+    }
+
+    return tasks;
+}
+
+bool DatabaseManager::saveTask(int orderId, Task &task)
+{
+    if(!isOpen()) return false;
+
+    QSqlQuery query(m_db);
+
+    if(task.id == -1) {
+        query.prepare("INSERT INTO tasks (order_id, section, title, is_done) "
+                      "VALUES (:order_id, :section, :title, :is_done)");
         query.bindValue(":order_id", orderId);
-        query.bindValue(":type", i); // type как int
-        query.bindValue(":performer_name", order.servicePerformer(type));
+        query.bindValue(":section", task.section);
+        query.bindValue(":title", task.label);
+        query.bindValue(":is_done", task.isDone ? 1 : 0);
 
-        if (!query.exec()) {
-            qDebug() << "Failed to insert service:" << query.lastError().text();
+        if(!query.exec()) {
+            qDebug() << "saveTask insert error:" << query.lastError().text();
+            return false;
+        }
+
+        task.id = query.lastInsertId().toInt();
+    } else {
+        query.prepare("UPDATE tasks SET is_done = :is_done WHERE id = :id");
+        query.bindValue(":is_done", task.isDone ? 1 : 0);
+        query.bindValue(":id", task.id);
+
+        if(!query.exec()) {
+            qDebug() << "saveTask update error:" << query.lastError().text();
             return false;
         }
     }
