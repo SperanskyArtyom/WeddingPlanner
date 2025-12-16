@@ -31,7 +31,7 @@ void OrderSearchWidget::initFilterMenu()
     // Filter actions
     auto *filterClient = new QAction("Клиенту", this);
     auto *filterDate = new QAction("Дате", this);
-    auto *filterPayment = new QAction("Статусу оплаты", this);
+    auto *filterPayment = new QAction("Бюджету", this);
 
     filterClient->setData(static_cast<int>(FilterType::Client));
     filterDate->setData(static_cast<int>(FilterType::Date));

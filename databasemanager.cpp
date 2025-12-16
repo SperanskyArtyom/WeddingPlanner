@@ -86,7 +86,7 @@ QList<WeddingOrder> DatabaseManager::getOrders(OrderFilter filter,
 
     case OrderFilter::Date:
         if (useText)
-            queryStr += "WHERE o.date = :filter ";
+            queryStr += "WHERE o.date LIKE :filter ";
         break;
 
     case OrderFilter::Budget:
@@ -124,12 +124,8 @@ QList<WeddingOrder> DatabaseManager::getOrders(OrderFilter filter,
 
     if ((filter == OrderFilter::Client || filter == OrderFilter::Date) && useText)
     {
-        if (filter == OrderFilter::Client)
-            query.bindValue(":filter", "%" + trimmed + "%");
-        else
-            query.bindValue(":filter", trimmed);
-    }
-    else if (filter == OrderFilter::Budget && budgetFilterValid)
+        query.bindValue(":filter", "%" + trimmed + "%");
+    } else if (filter == OrderFilter::Budget && budgetFilterValid)
     {
         query.bindValue(":budget", budgetValue);
     }

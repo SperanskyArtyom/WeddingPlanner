@@ -23,7 +23,7 @@ void OrderListWidget::setOrders(const QList<WeddingOrder> &orders)
 
     for (const auto &order : orders)
     {
-        QString text = QString("%1\nДата: %2\nБюджет: %3")
+        QString text = QString("%1\nДата: %2\nБюджет: %3 рублей")
                            .arg(order.clientName())
                            .arg(order.date().toString(Qt::ISODate))
                            .arg(order.budget());
