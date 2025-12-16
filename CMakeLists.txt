@@ -32,6 +32,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
         usermainwindow.h usermainwindow.cpp
         organizermainwindow.h organizermainwindow.cpp
         ordersearchwidget.h ordersearchwidget.cpp
+        service.h service.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET WeddingPlanner APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
