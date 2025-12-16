@@ -6,12 +6,14 @@ OrganizerMainWindow::OrganizerMainWindow(QWidget *parent)
 {
     initUi();
     initConnections();
+
+    updateOrderList();
 }
 
 void OrganizerMainWindow::initUi()
 {
     m_searchWidget = new OrderSearchWidget(this);
-    m_orderListWidget = new QListWidget(this);
+    m_orderListWidget = new OrderListWidget(this);
     m_addOrderButton = new QPushButton("Добавить свадьбу", this);
 
     mainLayout->addWidget(m_searchWidget);
@@ -22,15 +24,24 @@ void OrganizerMainWindow::initUi()
 void OrganizerMainWindow::initConnections()
 {
     connect(m_searchWidget, &OrderSearchWidget::searchChanged,
-            this, &OrganizerMainWindow::onSearchWidgetChanged);
+            this, &OrganizerMainWindow::updateOrderList);
+    connect(m_orderListWidget, &OrderListWidget::orderSelected,
+            this, &OrganizerMainWindow::onOrderSelected);
 }
 
-void OrganizerMainWindow::onSearchWidgetChanged(
-    const QString &text,
-    OrderSearchWidget::FilterType filter,
-    OrderSearchWidget::SortType sort)
+void OrganizerMainWindow::onOrderSelected()
 {
-    qDebug() << "Поиск: " << text;
-    qDebug() << "Фильтр: " << static_cast<int>(filter);
-    qDebug() << "Сортировка: " << static_cast<int>(sort);
+}
+
+void OrganizerMainWindow::updateOrderList()
+{
+    if (!m_dbManager || !m_searchWidget)
+        return;
+
+    auto filter = static_cast<DatabaseManager::OrderFilter>(m_searchWidget->filterType());
+    auto sort   = static_cast<DatabaseManager::OrderSort>(m_searchWidget->sortType());
+    QString text = m_searchWidget->searchText();
+
+    QList<WeddingOrder> orders = m_dbManager->getOrders(filter, sort, text);
+    m_orderListWidget->setOrders(orders);
 }

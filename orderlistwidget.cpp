@@ -1,0 +1,55 @@
+#include "orderlistwidget.h"
+#include <QVBoxLayout>
+#include <QListWidgetItem>
+
+OrderListWidget::OrderListWidget(QWidget *parent)
+    : QWidget(parent)
+{
+    m_listWidget = new QListWidget(this);
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(m_listWidget);
+    layout->setContentsMargins(0,0,0,0);
+    setLayout(layout);
+
+    connect(m_listWidget, &QListWidget::itemClicked,
+            this, &OrderListWidget::onItemClicked);
+}
+
+void OrderListWidget::setOrders(const QList<WeddingOrder> &orders)
+{
+    m_orders = orders;
+    m_listWidget->clear();
+
+    for (const auto &order : orders)
+    {
+        QString text = QString("%1\nДата: %2\nБюджет: %3")
+                           .arg(order.clientName())
+                           .arg(order.date().toString(Qt::ISODate))
+                           .arg(order.budget());
+        QListWidgetItem *item = new QListWidgetItem(text, m_listWidget);
+        item->setData(Qt::UserRole, order.id());
+    }
+}
+
+WeddingOrder OrderListWidget::selectedOrder() const
+{
+    auto item = m_listWidget->currentItem();
+    if (!item)
+        return WeddingOrder();
+
+    int id = item->data(Qt::UserRole).toInt();
+    for (const auto &order : m_orders)
+    {
+        if (order.id() == id)
+            return order;
+    }
+
+    return WeddingOrder();
+}
+
+void OrderListWidget::onItemClicked(QListWidgetItem *item)
+{
+    Q_UNUSED(item)
+    emit orderSelected(selectedOrder());
+}

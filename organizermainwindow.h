@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 
 #include "ordersearchwidget.h"
+#include "orderlistwidget.h"
 #include <QListWidget>
 
 class OrganizerMainWindow : public MainWindow
@@ -13,16 +14,16 @@ public:
     explicit OrganizerMainWindow(QWidget *parent = nullptr);
 
 private slots:
-void onSearchWidgetChanged(const QString &text,
-                           OrderSearchWidget::FilterType filter,
-                           OrderSearchWidget::SortType sort);
+    void updateOrderList();
+    void onOrderSelected();
+
 
 private:
     void initUi();
     void initConnections();
 
     OrderSearchWidget *m_searchWidget;
-    QListWidget *m_orderListWidget;
+    OrderListWidget *m_orderListWidget;
     QPushButton *m_addOrderButton;
 };
 
