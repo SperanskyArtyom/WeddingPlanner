@@ -13,6 +13,11 @@ WeddingOrder::WeddingOrder(int id,
     , m_budget(budget)
     , m_comment(comment)
 {
+    for (int i = 0; i < 4; i++)
+    {
+        Service::Type type = static_cast<Service::Type>(i);
+        m_services[i].setType(type);
+    }
 }
 
 int WeddingOrder::id() const
@@ -40,9 +45,10 @@ const QString &WeddingOrder::comment() const
     return m_comment;
 }
 
-const std::vector<Service> &WeddingOrder::services() const
+const QString &WeddingOrder::servicePerformer(Service::Type type) const
 {
-    return m_services;
+    int index = static_cast<int>(type);
+    return m_services[index].performerName();
 }
 
 void WeddingOrder::setClientName(const QString &name)
@@ -65,22 +71,8 @@ void WeddingOrder::setComment(const QString &comment)
     m_comment = comment;
 }
 
-void WeddingOrder::addService(const Service &service)
+void WeddingOrder::setServicePerformer(Service::Type type, const QString &performerName)
 {
-    m_services.push_back(service);
-}
-
-void WeddingOrder::removeServiceById(int serviceId)
-{
-    m_services.erase(
-        std::remove_if(m_services.begin(), m_services.end(),
-                       [serviceId](const Service &s) {
-                           return s.id() == serviceId;
-                       }),
-        m_services.end());
-}
-
-void WeddingOrder::clearServices()
-{
-    m_services.clear();
+    int index = static_cast<int>(type);
+    m_services[index].setPerformerName(performerName);
 }

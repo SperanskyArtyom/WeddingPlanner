@@ -5,7 +5,6 @@
 
 #include <QDate>
 #include <QString>
-#include <vector>
 
 class WeddingOrder
 {
@@ -23,16 +22,13 @@ public:
     const QDate &date() const;
     double budget() const;
     const QString &comment() const;
-    const std::vector<Service> &services() const;
+    const QString &servicePerformer(Service::Type type) const;
 
     void setClientName(const QString &name);
     void setDate(const QDate &date);
     void setBudget(double budget);
     void setComment(const QString &comment);
-
-    void addService(const Service &service);
-    void removeServiceById(int serviceId);
-    void clearServices();
+    void setServicePerformer(Service::Type type, const QString &performerName);
 
 private:
     int m_id = -1;
@@ -40,7 +36,7 @@ private:
     QDate m_date;
     double m_budget = 0.0;
     QString m_comment;
-    std::vector<Service> m_services;
+    Service m_services[4];
 };
 
 #endif // WEDDINGORDER_H

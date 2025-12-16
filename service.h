@@ -30,7 +30,7 @@ public:
 private:
     int m_id = -1;
     Type m_type;
-    QString m_performerName;
+    QString m_performerName = "";
 };
 
 #endif // SERVICE_H
